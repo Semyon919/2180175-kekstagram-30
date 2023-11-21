@@ -7,6 +7,12 @@ const errorText = {
   INVALID_PATTERN: 'Неправилбный хэштег',
 };
 
+const escapeName = 'Escape';
+
+const firstOrder = 1;
+const secondOrder = 2;
+const thirthOrder = 3;
+
 const fileField = document.querySelector('.img-upload__input');
 const overlay = document.querySelector('.img-upload__overlay');
 const body = document.querySelector('body');
@@ -14,6 +20,7 @@ const form = document.querySelector('.img-upload__form');
 const closeButton = document.querySelector('.img-upload__cancel');
 const hashtagField = document.querySelector('.text-hashtags');
 const commentField = document.querySelector('.text__description');
+const submitButton = document.querySelector('.img-upload__submit');
 
 const pristine = new Pristine(form, {
   classTo: 'img-upload__field-wrapper',
@@ -35,13 +42,21 @@ const hideModal = () => {
   document.removeEventListener('keydown', onDocumentKeydown);
 };
 
+const submitForm = (evt) => {
+  evt.preventDefault();
+  const valid = pristine.validate();
+  if (valid === false) {
+    document.getElementById('img-upload__submit').disabled = true;
+  }
+};
+
 const isTextFieldFocused = () =>
   document.activeElement === hashtagField ||
   document.activeElement === commentField;
 
 
 function onDocumentKeydown(evt) {
-  if (evt.key === 'Escape' && !isTextFieldFocused()) {
+  if (evt.key === escapeName && !isTextFieldFocused()) {
     evt.preventDefault();
     hideModal();
   }
@@ -55,10 +70,14 @@ const onCloseButton = () => {
   hideModal();
 };
 
+const onFormSubmit = () => {
+  submitForm();
+};
+
 const normalizeTags = (tagString) => tagString
   .trim()
   .split(' ')
-  .filter((tag) => Boolean(tag.lenght));
+  .filter((tag) => Boolean(tag.length));
 
 const hasValidTags = (value) => normalizeTags(value).every((tag) => VALID_SYMBOLS.test(tag));
 
@@ -73,7 +92,7 @@ pristine.addValidator(
   hashtagField,
   hasValidCount,
   errorText.INVALID_COUNT,
-  3,
+  thirthOrder,
   true
 );
 
@@ -81,7 +100,7 @@ pristine.addValidator(
   hashtagField,
   hasUniqueTags,
   errorText.NOT_UNIQUE,
-  2,
+  secondOrder,
   true
 );
 
@@ -89,9 +108,16 @@ pristine.addValidator(
   hashtagField,
   hasValidTags,
   errorText.INVALID_PATTERN,
-  1,
+  firstOrder,
   true
 );
 
-fileField.addEventListener('change', onFileInputChange);
-closeButton.addEventListener('click', onCloseButton);
+const handlerLaunch = () => {
+  fileField.addEventListener('change', onFileInputChange);
+  closeButton.addEventListener('click', onCloseButton);
+  form.addEventListener('submit', onFormSubmit);
+};
+
+export { handlerLaunch };
+
+
