@@ -42,11 +42,16 @@ const hideModal = () => {
   document.removeEventListener('keydown', onDocumentKeydown);
 };
 
-const submitForm = (evt) => {
+const onFormSubmit = (evt) => {
   evt.preventDefault();
-  const valid = pristine.validate();
-  if (valid === false) {
-    document.getElementById('img-upload__submit').disabled = true;
+  if (pristine.validate()) {
+    const data = new FormData(form);
+    fetch('https://30.javascript.pages.academy/kekstagram', {
+      method: 'POST',
+      body: data
+    });
+  } else {
+    console.log('Форма невалидна');
   }
 };
 
@@ -70,10 +75,10 @@ const onCloseButton = () => {
   hideModal();
 };
 
-const onFormSubmit = () => {
-  submitForm();
+/*const onFormSubmit = (evt) => {
+  onFormsubmit();
 };
-
+*/
 const normalizeTags = (tagString) => tagString
   .trim()
   .split(' ')
